@@ -25,6 +25,8 @@ ostream& operator<< (ostream& out, file_type type) {
    return out << hash[type];
 }
 
+// inode state =====================================================
+
 inode_state::inode_state() {
    DEBUGF ('i', "root = " << root << ", cwd = " << cwd
           << ", prompt = \"" << prompt() << "\"");
@@ -38,6 +40,13 @@ ostream& operator<< (ostream& out, const inode_state& state) {
    return out;
 }
 
+
+void inode_state::changePrompt(const string str){
+   prompt_ = str;
+}
+
+
+//inode ============================================================
 inode::inode(file_type type): inode_nr (next_inode_nr++) {
    switch (type) {
       case file_type::PLAIN_TYPE:
@@ -81,6 +90,9 @@ inode_ptr base_file::mkfile (const string&) {
 }
 
 
+
+// File inode(as opposed to the base class or the directory inode) ==================================
+
 size_t plain_file::size() const {
    size_t size {0};
    DEBUGF ('i', "size = " << size);
@@ -94,7 +106,11 @@ const wordvec& plain_file::readfile() const {
 
 void plain_file::writefile (const wordvec& words) {
    DEBUGF ('i', words);
+   data.clear();
+   data = words;
 }
+
+//Directory inode ==================================================================================
 
 size_t directory::size() const {
    size_t size {0};

@@ -42,6 +42,7 @@ class inode_state {
       inode_state& operator= (const inode_state&) = delete; // op=
       inode_state();
       const string& prompt() const;
+      void changePrompt(const string);
 };
 
 // class inode -
@@ -123,7 +124,7 @@ class plain_file: public base_file {
 //    Creates a new map with keys "." and "..".
 // remove -
 //    Removes the file or subdirectory from the current inode.
-//    Throws an file_error if this is not a directory, the file
+//    Throws a file_error if this is not a directory, the file
 //    does not exist, or the subdirectory is not empty.
 //    Here empty means the only entries are dot (.) and dotdot (..).
 // mkdir -
