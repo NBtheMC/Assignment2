@@ -4,18 +4,21 @@
 #include "debug.h"
 
 command_hash cmd_hash {
-   {"cat"   , fn_cat   },
-   {"cd"    , fn_cd    },
-   {"echo"  , fn_echo  },
-   {"exit"  , fn_exit  },
-   {"ls"    , fn_ls    },
-   {"lsr"   , fn_lsr   },
-   {"make"  , fn_make  },
-   {"mkdir" , fn_mkdir },
-   {"prompt", fn_prompt},
-   {"pwd"   , fn_pwd   },
-   {"rm"    , fn_rm    },
-   {"rmr"    , fn_rmr    }
+   {"cat"   , fn_cat    },
+   {"cd"    , fn_cd     },
+   {"echo"  , fn_echo   },
+   {"exit"  , fn_exit   },
+   {"ls"    , fn_ls     },
+   {"lsr"   , fn_lsr    },
+   {"make"  , fn_make   },
+   {"mkdir" , fn_mkdir  },
+   {"prompt", fn_prompt },
+   {"pwd"   , fn_pwd    },
+   {"rm"    , fn_rm     },
+   {"rmr"   , fn_rmr    },
+   {"#"     , fn_nothing},
+
+
 };
 
 command_fn find_command_fn (const string& cmd) {
@@ -104,4 +107,10 @@ void fn_rmr (inode_state& state, const wordvec& words){
    DEBUGF ('c', state);
    DEBUGF ('c', words);
 }
+
+void fn_nothing (inode_state& state, const wordvec& words){
+   DEBUGF ('c', state);
+   DEBUGF ('c', words);
+}
+
 

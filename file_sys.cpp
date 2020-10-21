@@ -30,6 +30,9 @@ ostream& operator<< (ostream& out, file_type type) {
 inode_state::inode_state() {
    DEBUGF ('i', "root = " << root << ", cwd = " << cwd
           << ", prompt = \"" << prompt() << "\"");
+   inode rootDir(file_type::DIRECTORY_TYPE);
+   root = make_shared<inode>(rootDir);
+   cwd = root;
 }
 
 const string& inode_state::prompt() const { return prompt_; }
