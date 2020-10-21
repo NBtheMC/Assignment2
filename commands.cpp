@@ -69,6 +69,9 @@ void fn_exit (inode_state& state, const wordvec& words){
 void fn_ls (inode_state& state, const wordvec& words){
    DEBUGF ('c', state);
    DEBUGF ('c', words);
+   for( auto mapObj : state.getCwd()->getContents()->getdirents()){
+      cout << mapObj.first << endl;
+   }
 }
 
 void fn_lsr (inode_state& state, const wordvec& words){
@@ -90,12 +93,28 @@ void fn_mkdir (inode_state& state, const wordvec& words){
 void fn_prompt (inode_state& state, const wordvec& words){
    DEBUGF ('c', state);
    DEBUGF ('c', words);
-   state.changePrompt(words[1]+' ');
+   string temp = "";
+   bool passedCmd = false;
+   for(auto word : words){
+      if(passedCmd){
+         temp += word;
+         temp += " ";
+      }else{
+         passedCmd = true;
+      }
+   }
+
+   state.changePrompt(temp);
+
 }
 
 void fn_pwd (inode_state& state, const wordvec& words){
    DEBUGF ('c', state);
    DEBUGF ('c', words);
+   if(state.getCwd() == state.getRoot()){
+      cout<<"in root!" <<endl;
+   }
+   //cout << state.getCwd();
 }
 
 void fn_rm (inode_state& state, const wordvec& words){

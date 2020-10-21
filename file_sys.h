@@ -41,6 +41,8 @@ class inode_state {
       inode_state (const inode_state&) = delete; // copy ctor
       inode_state& operator= (const inode_state&) = delete; // op=
       inode_state();
+      inode_ptr& getRoot(){return root;}
+      inode_ptr& getCwd(){return cwd;}
       const string& prompt() const;
       void changePrompt(const string);
 };
@@ -67,6 +69,7 @@ class inode {
    public:
       inode (file_type);
       int get_inode_nr() const;
+      base_file_ptr& getContents(){return contents;}
 };
 
 
