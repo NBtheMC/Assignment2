@@ -28,11 +28,16 @@ ostream& operator<< (ostream& out, file_type type) {
 // inode state =====================================================
 
 inode_state::inode_state() {
+   //initializing root of tree
+   root = make_shared<inode>(file_type::DIRECTORY_TYPE);
+   cwd = root;
+   //two new pointers to map (".",root) and ("..",root)
+   
+   root->contents->getdirents().insert(pair<string,inode_ptr>(".",root));
+   root->contents->getdirents().insert(pair<string,inode_ptr>("..",root));
+
    DEBUGF ('i', "root = " << root << ", cwd = " << cwd
           << ", prompt = \"" << prompt() << "\"");
-   inode rootDir(file_type::DIRECTORY_TYPE);
-   root = make_shared<inode>(rootDir);
-   cwd = root;
 }
 
 const string& inode_state::prompt() const { return prompt_; }
@@ -85,11 +90,17 @@ void base_file::remove (const string&) {
 }
 
 inode_ptr base_file::mkdir (const string&) {
+   inode dir(file_type::DIRECTORY_TYPE);
+   inode_ptr dir_ptr = make_shared<inode>(dir);
    throw file_error ("is a " + error_file_type());
 }
 
 inode_ptr base_file::mkfile (const string&) {
    throw file_error ("is a " + error_file_type());
+   inode file(file_type::DIRECTORY_TYPE);
+   inode_ptr file_ptr = make_shared<inode>(file);
+   
+   return file_ptr;
 }
 
 

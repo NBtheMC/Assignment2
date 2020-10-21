@@ -91,6 +91,8 @@ class base_file {
       virtual size_t size() const = 0;
       virtual const wordvec& readfile() const;
       virtual void writefile (const wordvec& newdata);
+      //returns dirents map of base file
+      virtual map<string,inode_ptr>& getdirents(){throw file_error("is a " + error_file_type());}
       virtual void remove (const string& filename);
       virtual inode_ptr mkdir (const string& dirname);
       virtual inode_ptr mkfile (const string& filename);
@@ -147,6 +149,7 @@ class directory: public base_file {
    public:
       virtual size_t size() const override;
       virtual void remove (const string& filename) override;
+      virtual map<string,inode_ptr>& getdirents() override {return dirents;}
       virtual inode_ptr mkdir (const string& dirname) override;
       virtual inode_ptr mkfile (const string& filename) override;
 };
