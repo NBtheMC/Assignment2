@@ -46,6 +46,14 @@ int exit_status_message() {
 void fn_cat (inode_state& state, const wordvec& words){
    DEBUGF ('c', state);
    DEBUGF ('c', words);
+   string filename = words[1];
+   auto fileMapObj = state.getCwd()->getContents()->getdirents().find(filename);
+   auto filePtr = fileMapObj->second;
+   auto data = filePtr->getContents()->readfile();
+   for(auto word : data){
+      cout << word << " ";
+   }
+   cout << endl;
 }
 
 void fn_cd (inode_state& state, const wordvec& words){
@@ -82,7 +90,14 @@ void fn_lsr (inode_state& state, const wordvec& words){
 void fn_make (inode_state& state, const wordvec& words){
    DEBUGF ('c', state);
    DEBUGF ('c', words);
-   
+   string filename = "";
+   wordvec fileContents;
+   filename = words[1];
+   for(long unsigned int pos = 2; pos < words.size(); pos++){
+      fileContents.push_back(words[pos]);
+   }
+   auto file = state.getCwd()->getContents()->mkfile(filename);
+   file->getContents()->writefile(fileContents);
 }
 
 void fn_mkdir (inode_state& state, const wordvec& words){
