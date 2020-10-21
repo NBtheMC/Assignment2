@@ -15,6 +15,7 @@ command_hash cmd_hash {
    {"prompt", fn_prompt},
    {"pwd"   , fn_pwd   },
    {"rm"    , fn_rm    },
+   {"rmr"    , fn_rmr    }
 };
 
 command_fn find_command_fn (const string& cmd) {
