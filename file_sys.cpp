@@ -126,6 +126,7 @@ size_t directory::size() const {
 
 void directory::remove (const string& filename) {
    DEBUGF ('i', filename);
+   dirents.erase(filename);
 }
 
 inode_ptr directory::mkdir (const string& dirname) {
