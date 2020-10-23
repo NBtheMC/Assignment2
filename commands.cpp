@@ -46,12 +46,24 @@ int exit_status_message() {
 void fn_cat (inode_state& state, const wordvec& words){
    DEBUGF ('c', state);
    DEBUGF ('c', words);
-   string filename = words[1];
-   auto fileMapObj = state.getCwd()->getContents()->getdirents().find(filename);
+   wordvec filenames;
+   for(int i = 1; i < words.size(); i++){
+      filenames.push_back(words[i]);
+   }
+
+   auto fileMapObj = state.getCwd()->getContents()->getdirents().find(filenames[0]);
    auto filePtr = fileMapObj->second;
    auto data = filePtr->getContents()->readfile();
-   for(auto word : data){
-      cout << word << " ";
+
+   for(auto filename : filenames){
+      fileMapObj = state.getCwd()->getContents()->getdirents().find(filename);
+      filePtr = fileMapObj->second;
+      data = filePtr->getContents()->readfile();
+
+      for(auto word : data){
+         cout << word << " ";
+      }
+      cout << endl;
    }
    cout << endl;
 }
@@ -78,7 +90,8 @@ void fn_ls (inode_state& state, const wordvec& words){
    DEBUGF ('c', state);
    DEBUGF ('c', words);
    for( auto mapObj : state.getCwd()->getContents()->getdirents()){
-      cout << mapObj.first << endl;
+      auto inodePtr = mapObj.second;
+      cout << inodePtr->get_inode_nr() << " " << inodePtr->getContents()->size() << " "<< mapObj.first << endl;
    }
 }
 

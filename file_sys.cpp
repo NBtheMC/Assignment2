@@ -100,8 +100,11 @@ inode_ptr base_file::mkfile (const string&) {
 // File inode(as opposed to the base class or the directory inode) ==================================
 
 size_t plain_file::size() const {
-   size_t size {0};
-   DEBUGF ('i', "size = " << size);
+   size_t size = 0;
+   for(auto word : data){
+      size += word.size();
+   }
+   size += data.size()-1;
    return size;
 }
 
@@ -119,9 +122,7 @@ void plain_file::writefile (const wordvec& words) {
 //Directory inode ==================================================================================
 
 size_t directory::size() const {
-   size_t size {0};
-   DEBUGF ('i', "size = " << size);
-   return size;
+   return dirents.size();
 }
 
 void directory::remove (const string& filename) {
