@@ -136,7 +136,7 @@ inode_ptr directory::mkdir (const string& dirname) {
    //insert dot and dotdot into new directory
    (dir->getContents())->getdirents().insert(pair<string,inode_ptr>(".",dir));
    //still need to figure out how to access cwd
-   //(dir->getContents())->getdirents().insert(pair<string,inode_ptr>("..",&this);
+   //(dir->getContents())->getdirents().insert(pair<string,inode_ptr>("..",*this);
 
    dirents.insert(pair<string,inode_ptr>(dirname, dir));  
    return dir;

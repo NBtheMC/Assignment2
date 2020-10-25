@@ -1,5 +1,6 @@
 // $Id: commands.cpp,v 1.18 2019-10-08 13:55:31-07 - - $
 
+#include "util.h"
 #include "commands.h"
 #include "debug.h"
 
@@ -20,6 +21,8 @@ command_hash cmd_hash {
 
 
 };
+
+inode_ptr findNode( inode_state& state, string path);
 
 command_fn find_command_fn (const string& cmd) {
    // Note: value_type is pair<const key_type, mapped_type>
@@ -71,6 +74,9 @@ void fn_cat (inode_state& state, const wordvec& words){
 void fn_cd (inode_state& state, const wordvec& words){
    DEBUGF ('c', state);
    DEBUGF ('c', words);
+   
+   state.changeCwd(findNode(state,words[1])); 
+
 }
 
 void fn_echo (inode_state& state, const wordvec& words){
@@ -115,8 +121,9 @@ void fn_make (inode_state& state, const wordvec& words){
 
 void fn_mkdir (inode_state& state, const wordvec& words){
    //insert first directory
-   state.getCwd()->getContents()->mkdir(words[1]);
-   
+   auto dir = state.getCwd()->getContents()->mkdir(words[1]);
+   (dir->getContents())->getdirents().insert(pair<string,inode_ptr>("..", state.getCwd()));
+
    DEBUGF ('c', state);
    DEBUGF ('c', words);
 }
@@ -143,7 +150,6 @@ void fn_pwd (inode_state& state, const wordvec& words){
    DEBUGF ('c', state);
    DEBUGF ('c', words);
    if(state.getCwd() == state.getRoot()){
-      cout<<"in root!" <<endl;
    }
    //cout << state.getCwd();
 }
@@ -166,5 +172,23 @@ void fn_nothing (inode_state& state, const wordvec& words){
    DEBUGF ('c', state);
    DEBUGF ('c', words);
 }
+
+inode_ptr findNode( inode_state& state, string path){
+   inode_ptr currDir;
+   if(path.at(0) == '/'){
+      currDir = state.getRoot();
+   }else{
+      currDir = state.getCwd();
+   }
+   wordvec parsedPath = split(path,"/");
+   map<string,inode_ptr> dirents;
+   for(auto word: parsedPath){
+      dirents = currDir->getContents()->getdirents();
+      currDir = dirents.find(word)->second;
+   }
+   return currDir;
+   
+}
+
 
 

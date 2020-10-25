@@ -37,6 +37,7 @@ class inode_state {
       inode_ptr root {nullptr};
       inode_ptr cwd {nullptr};
       string prompt_ {"% "};
+      wordvec cwdPath {};
    public:
       inode_state (const inode_state&) = delete; // copy ctor
       inode_state& operator= (const inode_state&) = delete; // op=
@@ -45,6 +46,7 @@ class inode_state {
       inode_ptr& getCwd(){return cwd;}
       const string& prompt() const;
       void changePrompt(const string);
+      void changeCwd(inode_ptr ptr){cwd = ptr;}
 };
 
 // class inode -
@@ -63,6 +65,7 @@ class inode_state {
 class inode {
    friend class inode_state;
    private:
+      string pathname;
       static size_t next_inode_nr;
       size_t inode_nr;
       base_file_ptr contents;
@@ -70,6 +73,7 @@ class inode {
       inode (file_type);
       int get_inode_nr() const;
       base_file_ptr& getContents(){return contents;}
+      
 };
 
 
