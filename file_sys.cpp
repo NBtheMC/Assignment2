@@ -132,7 +132,14 @@ void directory::remove (const string& filename) {
 
 inode_ptr directory::mkdir (const string& dirname) {
    DEBUGF ('i', dirname);
-   return nullptr;
+   inode_ptr dir = make_shared<inode>(file_type::DIRECTORY_TYPE);
+   //insert dot and dotdot into new directory
+   (dir->getContents())->getdirents().insert(pair<string,inode_ptr>(".",dir));
+   //still need to figure out how to access cwd
+   //(dir->getContents())->getdirents().insert(pair<string,inode_ptr>("..",&this);
+
+   dirents.insert(pair<string,inode_ptr>(dirname, dir));  
+   return dir;
 }
 
 inode_ptr directory::mkfile (const string& filename) {
