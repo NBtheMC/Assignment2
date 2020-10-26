@@ -103,8 +103,12 @@ size_t plain_file::size() const {
    size_t size = 0;
    for(auto word : data){
       size += word.size();
+      cout << "size: " << size << endl;
    }
-   size += data.size()-1;
+   if(size>0){
+      size += data.size()-1;
+
+   }
    return size;
 }
 

@@ -112,10 +112,20 @@ void fn_make (inode_state& state, const wordvec& words){
    string filename = "";
    wordvec fileContents;
    filename = words[1];
+   inode_ptr targetNode; 
+   if(filename.find("/") != string::npos){
+      size_t lastSlash = filename.find_last_of("/");
+      string path = filename.substr(0,lastSlash+1);
+      filename = filename.substr(lastSlash+1);
+      targetNode = findNode(state,path);
+   }else{
+      targetNode = state.getCwd();
+   }
+   
    for(long unsigned int pos = 2; pos < words.size(); pos++){
       fileContents.push_back(words[pos]);
    }
-   auto file = state.getCwd()->getContents()->mkfile(filename);
+   auto file = targetNode->getContents()->mkfile(filename);
    file->getContents()->writefile(fileContents);
 }
 
@@ -157,10 +167,23 @@ void fn_pwd (inode_state& state, const wordvec& words){
 void fn_rm (inode_state& state, const wordvec& words){
    DEBUGF ('c', state);
    DEBUGF ('c', words);
-   
+
    string filename = words[1];
+
+
+   inode_ptr targetNode;
+   if(filename.find("/") != string::npos){
+      size_t lastSlash = filename.find_last_of("/");
+      string path = filename.substr(0,lastSlash+1);
+      filename = filename.substr(lastSlash+1);
+      targetNode = findNode(state,path);
+   }else{
+      targetNode = state.getCwd();
+   }
+
    
-   state.getCwd()->getContents()->remove(filename);
+
+   targetNode->getContents()->remove(filename);
 }
 
 void fn_rmr (inode_state& state, const wordvec& words){
@@ -189,6 +212,4 @@ inode_ptr findNode( inode_state& state, string path){
    return currDir;
    
 }
-
-
 
