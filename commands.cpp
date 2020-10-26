@@ -130,9 +130,28 @@ void fn_make (inode_state& state, const wordvec& words){
 }
 
 void fn_mkdir (inode_state& state, const wordvec& words){
+<<<<<<< Updated upstream
    //split vector between slashes
    string path = words[1];
    wordvec parsedPath = split(path,"/");
+=======
+   //insert first directory
+   
+   string dirname = words[1];
+
+   inode_ptr targetNode;
+   if(dirname.find("/") != string::npos){
+      size_t lastSlash = dirname.find_last_of("/");
+      string path = dirname.substr(0,lastSlash+1);
+      dirname = dirname.substr(lastSlash+1);
+      targetNode = findNode(state,path);
+   }else{
+      targetNode = state.getCwd();
+   }
+
+   auto dir = targetNode->getContents()->mkdir(dirname);
+   (dir->getContents())->getdirents().insert(pair<string,inode_ptr>("..", state.getCwd()));
+>>>>>>> Stashed changes
 
    inode_ptr parentDir = state.getCwd();
    inode_ptr currentDir;
