@@ -130,12 +130,7 @@ void fn_make (inode_state& state, const wordvec& words){
 }
 
 void fn_mkdir (inode_state& state, const wordvec& words){
-<<<<<<< Updated upstream
    //split vector between slashes
-   string path = words[1];
-   wordvec parsedPath = split(path,"/");
-=======
-   //insert first directory
    
    string dirname = words[1];
 
@@ -151,18 +146,8 @@ void fn_mkdir (inode_state& state, const wordvec& words){
 
    auto dir = targetNode->getContents()->mkdir(dirname);
    (dir->getContents())->getdirents().insert(pair<string,inode_ptr>("..", state.getCwd()));
->>>>>>> Stashed changes
 
-   inode_ptr parentDir = state.getCwd();
-   inode_ptr currentDir;
    
-   for(auto word:parsedPath){
-      cout << word << endl;
-      currentDir = state.getCwd()->getContents()->mkdir(word);
-      (currentDir->getContents())->getdirents().insert(pair<string,inode_ptr>(".", currentDir));
-      (currentDir->getContents())->getdirents().insert(pair<string,inode_ptr>("..", parentDir));
-      parentDir = currentDir;
-   }
    
    DEBUGF ('c', state);
    DEBUGF ('c', words);
