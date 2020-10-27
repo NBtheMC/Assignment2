@@ -47,6 +47,7 @@ class inode_state {
       const string& prompt() const;
       void changePrompt(const string);
       void changeCwd(inode_ptr ptr){cwd = ptr;}
+      wordvec& getCwdPath(){return cwdPath;}
 };
 
 // class inode -
