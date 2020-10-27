@@ -222,6 +222,11 @@ inode_ptr findNode( inode_state& state, string path){
    map<string,inode_ptr> dirents;
    for(auto word: parsedPath){
       dirents = currDir->getContents()->getdirents();
+
+      if(dirents.count(word) == 0){
+         throw command_error (word + ": no such directory");
+      }
+
       currDir = dirents.find(word)->second;
    }
    return currDir;
