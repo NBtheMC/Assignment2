@@ -55,15 +55,28 @@ void fn_cat (inode_state& state, const wordvec& words){
       filenames.push_back(words[i]);
    }
 
-   auto fileMapObj = state.getCwd()->getContents()->getdirents().find(filenames[0]);
-   auto filePtr = fileMapObj->second;
-   auto data = filePtr->getContents()->readfile();
 
+   inode_ptr targetNode;
    for(auto filename : filenames){
-      fileMapObj = state.getCwd()->getContents()->getdirents().find(filename);
-      filePtr = fileMapObj->second;
-      data = filePtr->getContents()->readfile();
+      if(filename.find("/") != string::npos){
+         size_t lastSlash = filename.find_last_of("/");
+         string path = filename.substr(0,lastSlash+1);
+         filename = filename.substr(lastSlash+1);
+         targetNode = findNode(state,path);
+      }else{
+         targetNode = state.getCwd();
+      }
 
+      if (targetNode->getContents()->getdirents().count(filename) == 0)
+      {
+         throw command_error (filename + ": no such file");
+      }
+
+      auto fileMapObj = 
+         targetNode->getContents()->getdirents().find(filename);
+      auto filePtr = fileMapObj->second;
+      auto data = filePtr->getContents()->readfile();
+ 
       for(auto word : data){
          cout << word << " ";
       }
@@ -77,7 +90,24 @@ void fn_cd (inode_state& state, const wordvec& words){
    DEBUGF ('c', words);
    
    state.changeCwd(findNode(state,words[1])); 
+   
 
+   if(words[1].at(0) == '/'){
+      state.getCwdPath().clear();
+   }
+
+
+   wordvec parsedPath = split(words[1],"/");
+   for(auto dir : parsedPath){ 
+      if(dir == ".."){
+         state.getCwdPath().pop_back();
+      }else if(dir == "."){
+         
+      }else {
+         state.getCwdPath().push_back(dir);  
+      }
+
+   }
 }
 
 void fn_echo (inode_state& state, const wordvec& words){
@@ -118,7 +148,7 @@ void fn_lsr (inode_state& state, const wordvec& words){
    for(auto map: dir->getContents()->getdirents()){     
       auto inodePtr = map.second;
       //print out whether file or directory
-      cout << setw(6)<< inodePtr->get_inode_nr() << setw(6)<< inodePtr->getContents()->size() << "  " << mapObj.first << endl;
+      cout << setw(6)<< inodePtr->get_inode_nr() << setw(6)<< inodePtr->getContents()->size() << "  " << map.first << endl;
       //directory type
       if(typeid(inodePtr->getContents())==typeid(make_shared<directory>())){
          //recursively go into every directory
@@ -171,7 +201,8 @@ void fn_mkdir (inode_state& state, const wordvec& words){
    }
 
    auto dir = targetNode->getContents()->mkdir(dirname);
-   (dir->getContents())->getdirents().insert(pair<string,inode_ptr>("..", state.getCwd()));
+   auto insertPair = pair<string,inode_ptr>("..", state.getCwd());
+   dir->getContents()->getdirents().insert(insertPair);
 
    
    
@@ -200,9 +231,10 @@ void fn_prompt (inode_state& state, const wordvec& words){
 void fn_pwd (inode_state& state, const wordvec& words){
    DEBUGF ('c', state);
    DEBUGF ('c', words);
-   if(state.getCwd() == state.getRoot()){
+   for(auto dir : state.getCwdPath()){
+      cout << "/" << dir;
    }
-   //cout << state.getCwd();
+   cout<<endl;
 }
 
 void fn_rm (inode_state& state, const wordvec& words){
@@ -248,6 +280,11 @@ inode_ptr findNode( inode_state& state, string path){
    map<string,inode_ptr> dirents;
    for(auto word: parsedPath){
       dirents = currDir->getContents()->getdirents();
+
+      if(dirents.count(word) == 0){
+         throw command_error (word + ": no such directory");
+      }
+
       currDir = dirents.find(word)->second;
    }
    return currDir;
