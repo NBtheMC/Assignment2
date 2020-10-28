@@ -3,6 +3,7 @@
 #include "util.h"
 #include "commands.h"
 #include "debug.h"
+#include "iomanip"
 
 command_hash cmd_hash {
    {"cat"   , fn_cat    },
@@ -95,13 +96,38 @@ void fn_exit (inode_state& state, const wordvec& words){
 void fn_ls (inode_state& state, const wordvec& words){
    DEBUGF ('c', state);
    DEBUGF ('c', words);
-   for( auto mapObj : state.getCwd()->getContents()->getdirents()){
+   string pathname = words[1];
+   inode_ptr currentDir;
+   if(pathname.empty()){
+      currentDir = findNode(state, pathname);
+   }
+   else{
+      currentDir = state.getCwd();
+   }
+   for( auto mapObj : currentDir->getContents()->getdirents()){
       auto inodePtr = mapObj.second;
-      cout << inodePtr->get_inode_nr() << " " << inodePtr->getContents()->size() << " "<< mapObj.first << endl;
+      cout << setw(6)<< inodePtr->get_inode_nr() << setw(6)<< inodePtr->getContents()->size() << "  " << mapObj.first << endl;
    }
 }
 
 void fn_lsr (inode_state& state, const wordvec& words){
+   //print out current path
+   inode_ptr dir = findNode(state, words[1]);
+   fn_ls(state,words);
+   //print out everything in the path's directory
+   for(auto map: dir->getContents()->getdirents()){     
+      auto inodePtr = map.second;
+      //print out whether file or directory
+      cout << setw(6)<< inodePtr->get_inode_nr() << setw(6)<< inodePtr->getContents()->size() << "  " << mapObj.first << endl;
+      //directory type
+      if(typeid(inodePtr->getContents())==typeid(make_shared<directory>())){
+         //recursively go into every directory
+         string pathName = words[1]+"/"+map.first;
+         wordvec w;
+         w.push_back(pathName);
+         fn_lsr(state,w);
+      }
+   }
    DEBUGF ('c', state);
    DEBUGF ('c', words);
 }
