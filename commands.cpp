@@ -101,9 +101,11 @@ void fn_cd (inode_state& state, const wordvec& words){
    for(auto dir : parsedPath){ 
       if(dir == ".."){
          state.getCwdPath().pop_back();
-      }else if(dir == "."){
+      }
+      else if(dir == "."){
          
-      }else {
+      }
+      else {
          state.getCwdPath().push_back(dir);  
       }
 
@@ -150,7 +152,8 @@ void fn_lsr (inode_state& state, const wordvec& words){
       //print out whether file or directory
       cout << setw(6)<< inodePtr->get_inode_nr() << setw(6)<< inodePtr->getContents()->size() << "  " << map.first << endl;
       //directory type
-      if(typeid(inodePtr->getContents())==typeid(make_shared<directory>())){
+      shared_ptr<directory> isDir = dynamic_pointer_cast<directory>(inodePtr->getContents());
+      if(isDir){
          //recursively go into every directory
          string pathName = words[1]+"/"+map.first;
          wordvec w;
@@ -174,7 +177,8 @@ void fn_make (inode_state& state, const wordvec& words){
       string path = filename.substr(0,lastSlash+1);
       filename = filename.substr(lastSlash+1);
       targetNode = findNode(state,path);
-   }else{
+   }
+   else{
       targetNode = state.getCwd();
    }
    
@@ -204,8 +208,6 @@ void fn_mkdir (inode_state& state, const wordvec& words){
    auto insertPair = pair<string,inode_ptr>("..", state.getCwd());
    dir->getContents()->getdirents().insert(insertPair);
 
-   
-   
    DEBUGF ('c', state);
    DEBUGF ('c', words);
 }
@@ -223,9 +225,7 @@ void fn_prompt (inode_state& state, const wordvec& words){
          passedCmd = true;
       }
    }
-
    state.changePrompt(temp);
-
 }
 
 void fn_pwd (inode_state& state, const wordvec& words){
@@ -243,7 +243,6 @@ void fn_rm (inode_state& state, const wordvec& words){
 
    string filename = words[1];
 
-
    inode_ptr targetNode;
    if(filename.find("/") != string::npos){
       size_t lastSlash = filename.find_last_of("/");
@@ -254,14 +253,28 @@ void fn_rm (inode_state& state, const wordvec& words){
       targetNode = state.getCwd();
    }
 
-   
-
    targetNode->getContents()->remove(filename);
 }
 
 void fn_rmr (inode_state& state, const wordvec& words){
-   DEBUGF ('c', state);
-   DEBUGF ('c', words);
+   inode_ptr dir = findNode(state, words[1]);
+   //delete everything
+   for(auto map: dir->getContents()->getdirents()){
+      auto inodePtr = map.second;
+      string pathName = words[1]+"/"+map.first;
+      wordvec w;
+      w.push_back(pathName);
+      //directory type
+      shared_ptr<directory> isDir = dynamic_pointer_cast<directory>(inodePtr->getContents());
+      if(isDir){
+         //recursively go into every directory
+         fn_rmr(state,w);
+      }
+      //plain file
+      else{
+         fn_rm(state,w);
+      }
+   }
 }
 
 void fn_nothing (inode_state& state, const wordvec& words){
