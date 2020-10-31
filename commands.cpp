@@ -145,6 +145,7 @@ void fn_ls (inode_state& state, const wordvec& words){
    else{
       currentDir = state.getCwd();
    }
+   currentDir->getContents()->sortdir();
    for( auto mapObj : currentDir->getContents()->getdirents()){
       auto inodePtr = mapObj.second;
       cout << setw(6)<< inodePtr->get_inode_nr() 
@@ -158,6 +159,7 @@ void fn_ls (inode_state& state, const wordvec& words){
 void fn_lsr (inode_state& state, const wordvec& words){
    //print out current path
    inode_ptr dir = findNode(state, words[1]);
+   dir->getContents()->sortdir();
    fn_ls(state,words);
    //print out everything in the path's directory
    for(auto map: dir->getContents()->getdirents()){     

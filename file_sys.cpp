@@ -3,6 +3,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <unordered_map>
+#include <bits/stdc++.h>
 
 using namespace std;
 
@@ -157,3 +158,11 @@ inode_ptr directory::mkfile (const string& filename) {
    return file;
 }
 
+bool cmp(pair<string,inode_ptr> x,pair<string,inode_ptr> y){
+   return x.first < y.first;
+}
+
+//sorts dirents alphabetically
+void directory::sortdir(){
+   sort(dirents.begin(),dirents.end(),cmp);
+}
