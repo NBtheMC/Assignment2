@@ -24,6 +24,9 @@ command_hash cmd_hash {
 };
 
 inode_ptr findNode( inode_state& state, string path);
+void preExitClear(inode_ptr node);
+int stringToInt(string str);
+
 
 command_fn find_command_fn (const string& cmd) {
    // Note: value_type is pair<const key_type, mapped_type>
@@ -122,6 +125,13 @@ void fn_echo (inode_state& state, const wordvec& words){
 void fn_exit (inode_state& state, const wordvec& words){
    DEBUGF ('c', state);
    DEBUGF ('c', words);
+   //set all content pointers to null
+   preExitClear(state.getRoot());
+   if(words.size() > 1){
+      exec::status(stringToInt(words[1]));
+   }else{
+      exec::status(0);
+   }
    throw ysh_exit();
 }
 
@@ -305,5 +315,36 @@ inode_ptr findNode( inode_state& state, string path){
    }
    return currDir;
    
+}
+
+void preExitClear(inode_ptr node){
+   if(node->getContents()->fileType() == "file"){
+      return;
+   }
+   auto dirents = node->getContents()->getdirents();
+   if(dirents.size() == 2){
+      cout << "delete empty node" << endl;
+   }else{
+      for(auto entryPair : dirents){
+         cout<< "try to delete: " << entryPair.first << endl;
+         if(entryPair.first != "." && entryPair.first != ".."){
+            preExitClear(entryPair.second);
+         }
+      }
+      cout << "delete empty node" << endl;
+
+   }
+}
+
+int stringToInt(string str){
+   int result = 0;
+   for(auto digit : str){
+      if(isdigit(digit)){
+         result = result * 10 + digit - '0';
+      }else{
+         return 127;
+      }
+   }
+   return result;
 }
 
