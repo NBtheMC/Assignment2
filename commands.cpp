@@ -128,17 +128,20 @@ void fn_exit (inode_state& state, const wordvec& words){
 void fn_ls (inode_state& state, const wordvec& words){
    DEBUGF ('c', state);
    DEBUGF ('c', words);
-   string pathname = words[1];
    inode_ptr currentDir;
-   if(pathname.empty()){
-      currentDir = findNode(state, pathname);
+   if(words.size() > 1){
+      currentDir = findNode(state, words[1]);
    }
    else{
       currentDir = state.getCwd();
    }
    for( auto mapObj : currentDir->getContents()->getdirents()){
       auto inodePtr = mapObj.second;
-      cout << setw(6)<< inodePtr->get_inode_nr() << setw(6)<< inodePtr->getContents()->size() << "  " << mapObj.first << endl;
+      cout << setw(6)<< inodePtr->get_inode_nr() 
+         << setw(6)
+         << inodePtr->getContents()->size() 
+         << "  " << mapObj.first 
+         << endl;
    }
 }
 

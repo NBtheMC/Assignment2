@@ -101,11 +101,14 @@ inode_ptr base_file::mkfile (const string&) {
 
 size_t plain_file::size() const {
    size_t size = 0;
+   if(data.size() == 0){
+      return 0;
+   }
    for(auto word : data){
       size += word.size();
-      cout << "size: " << size << endl;
    }
    if(size>0){
+      //add in the spaces
       size += data.size()-1;
 
    }
