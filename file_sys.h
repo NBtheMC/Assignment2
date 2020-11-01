@@ -164,7 +164,6 @@ class directory: public base_file {
       virtual inode_ptr mkdir (const string& dirname) override;
       virtual inode_ptr mkfile (const string& filename) override;
       virtual string fileType(){return "directory";}
-
 };
 
 #endif

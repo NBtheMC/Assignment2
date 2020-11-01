@@ -3,8 +3,6 @@
 #include <iostream>
 #include <stdexcept>
 #include <unordered_map>
-#include <bits/stdc++.h>
-
 using namespace std;
 
 #include "debug.h"
@@ -156,13 +154,4 @@ inode_ptr directory::mkfile (const string& filename) {
    inode_ptr file = make_shared<inode>(file_type::PLAIN_TYPE);
    dirents.insert(pair<string,inode_ptr>(filename, file));
    return file;
-}
-
-bool cmp(pair<string,inode_ptr> x,pair<string,inode_ptr> y){
-   return x.first < y.first;
-}
-
-//sorts dirents alphabetically
-void directory::sortdir(){
-   sort(dirents.begin(),dirents.end(),cmp);
 }
