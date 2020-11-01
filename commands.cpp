@@ -54,7 +54,7 @@ void fn_cat (inode_state& state, const wordvec& words){
    DEBUGF ('c', state);
    DEBUGF ('c', words);
    wordvec filenames;
-   for(int i = 1; i < words.size(); i++){
+   for(long unsigned int i = 1; i < words.size(); i++){
       filenames.push_back(words[i]);
    }
 
@@ -163,9 +163,11 @@ void fn_lsr (inode_state& state, const wordvec& words){
    for(auto map: dir->getContents()->getdirents()){     
       auto inodePtr = map.second;
       //print out whether file or directory
-      cout << setw(6)<< inodePtr->get_inode_nr() << setw(6)<< inodePtr->getContents()->size() << "  " << map.first << endl;
+      cout << setw(6)<< inodePtr->get_inode_nr() << setw(6)<< 
+         inodePtr->getContents()->size() << "  " << map.first << endl;
       //directory type
-      shared_ptr<directory> isDir = dynamic_pointer_cast<directory>(inodePtr->getContents());
+      shared_ptr<directory> isDir = 
+         dynamic_pointer_cast<directory>(inodePtr->getContents());
       if(isDir){
          //recursively go into every directory
          string pathName = words[1]+"/"+map.first;
@@ -278,7 +280,8 @@ void fn_rmr (inode_state& state, const wordvec& words){
       wordvec w;
       w.push_back(pathName);
       //directory type
-      shared_ptr<directory> isDir = dynamic_pointer_cast<directory>(inodePtr->getContents());
+      shared_ptr<directory> isDir = 
+         dynamic_pointer_cast<directory>(inodePtr->getContents());
       if(isDir){
          //recursively go into every directory
          fn_rmr(state,w);

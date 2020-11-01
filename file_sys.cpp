@@ -30,9 +30,10 @@ inode_state::inode_state() {
    //initializing root of tree
    root = make_shared<inode>(file_type::DIRECTORY_TYPE);
    cwd = root;
+   map<string,inode_ptr> rootDirents = root->contents->getdirents();
    //two new pointers in map (".",root) and ("..",root)
-   root->contents->getdirents().insert(pair<string,inode_ptr>(".",root));
-   root->contents->getdirents().insert(pair<string,inode_ptr>("..",root));
+   rootDirents.insert(pair<string,inode_ptr>(".",root));
+   rootDirents.insert(pair<string,inode_ptr>("..",root));
    DEBUGF ('i', "root = " << root << ", cwd = " << cwd
           << ", prompt = \"" << prompt() << "\"");
 }
@@ -94,9 +95,7 @@ inode_ptr base_file::mkfile (const string&) {
    throw file_error ("is a " + error_file_type());
 }
 
-
-
-// File inode(as opposed to the base class or the directory inode) ==================================
+// File inode
 
 size_t plain_file::size() const {
    size_t size = 0;
@@ -109,7 +108,6 @@ size_t plain_file::size() const {
    if(size>0){
       //add in the spaces
       size += data.size()-1;
-
    }
    return size;
 }
@@ -125,7 +123,7 @@ void plain_file::writefile (const wordvec& words) {
    data = words;
 }
 
-//Directory inode ==================================================================================
+//Directory inode
 
 size_t directory::size() const {
    return dirents.size();
@@ -140,10 +138,8 @@ inode_ptr directory::mkdir (const string& dirname) {
    DEBUGF ('i', dirname);
    inode_ptr dir = make_shared<inode>(file_type::DIRECTORY_TYPE);
    //insert dot and dotdot into new directory
-   (dir->getContents())->getdirents().insert(pair<string,inode_ptr>(".",dir));
-   //still need to figure out how to access cwd
-   //(dir->getContents())->getdirents().insert(pair<string,inode_ptr>("..",*this);
-
+   (dir->getContents())->getdirents()
+      .insert(pair<string,inode_ptr>(".",dir));
    dirents.insert(pair<string,inode_ptr>(dirname, dir));  
    return dir;
 }
@@ -155,3 +151,4 @@ inode_ptr directory::mkfile (const string& filename) {
    dirents.insert(pair<string,inode_ptr>(filename, file));
    return file;
 }
+
