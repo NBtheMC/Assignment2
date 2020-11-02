@@ -267,7 +267,6 @@ void fn_rm (inode_state& state, const wordvec& words){
    }else{
       targetNode = state.getCwd();
    }
-
    targetNode->getContents()->remove(filename);
 }
 
