@@ -218,13 +218,11 @@ void fn_mkdir (inode_state& state, const wordvec& words){
    }else{
       targetNode = state.getCwd();
    }
-   //only make if target does not have same name directory
-   auto nodeToEnter = targetNode->getContents()->getdirents().find(dirname);
-   if(nodeToEnter != targetNode->getContents()->getdirents().end()){
-      auto dir = targetNode->getContents()->mkdir(dirname);
-      auto insertPair = pair<string,inode_ptr>("..", state.getCwd());
-      dir->getContents()->getdirents().insert(insertPair);
-   }
+
+   auto dir = targetNode->getContents()->mkdir(dirname);
+   auto insertPair = pair<string,inode_ptr>("..", state.getCwd());
+   dir->getContents()->getdirents().insert(insertPair);
+
    DEBUGF ('c', state);
    DEBUGF ('c', words);
 }
@@ -287,7 +285,6 @@ void fn_rmr (inode_state& state, const wordvec& words){
       if(isDir){
          //recursively go into every directory
          fn_rmr(state,w);
-         //fn_rm(state,w);
       }
       //plain file
       else{
