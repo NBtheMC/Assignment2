@@ -104,7 +104,6 @@ class base_file {
       virtual void remove (const string& filename);
       virtual inode_ptr mkdir (const string& dirname);
       virtual inode_ptr mkfile (const string& filename);
-      virtual string fileType() = 0;
 };
 
 // class plain_file -
@@ -127,8 +126,6 @@ class plain_file: public base_file {
       virtual size_t size() const override;
       virtual const wordvec& readfile() const override;
       virtual void writefile (const wordvec& newdata) override;
-      virtual string fileType(){return "file";}
-
 };
 
 // class directory -
@@ -163,7 +160,10 @@ class directory: public base_file {
       virtual map<string,inode_ptr>& getdirents() override {return dirents;}
       virtual inode_ptr mkdir (const string& dirname) override;
       virtual inode_ptr mkfile (const string& filename) override;
+<<<<<<< HEAD
       virtual string fileType(){return "directory";}
+=======
+>>>>>>> parent of 7fd8e90... wip preExitClear, added exit status
 };
 
 #endif
