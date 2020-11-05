@@ -222,9 +222,9 @@ void fn_mkdir (inode_state& state, const wordvec& words){
       targetNode = state.getCwd();
    }
    //dont make directory named . or ..
-   //if(dirname == "." || dirname == ".."){
+   if(dirname == "." || dirname == ".."){
       return;
-   //}
+   }
    //only make if target does not have same name directory
    auto nodeToEnter = targetNode->getContents()->getdirents().find(dirname);
    if(nodeToEnter != targetNode->getContents()->getdirents().end()){
@@ -276,6 +276,7 @@ void fn_rm (inode_state& state, const wordvec& words){
    }else{
       targetNode = state.getCwd();
    }
+
    targetNode->getContents()->remove(filename);
 }
 
@@ -293,7 +294,6 @@ void fn_rmr (inode_state& state, const wordvec& words){
       if(isDir){
          //recursively go into every directory
          fn_rmr(state,w);
-         //fn_rm(state,w);
       }
       //plain file
       else{
