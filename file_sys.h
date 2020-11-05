@@ -161,7 +161,10 @@ class directory: public base_file {
       virtual inode_ptr mkdir (const string& dirname) override;
       virtual inode_ptr mkfile (const string& filename) override;
 <<<<<<< HEAD
+<<<<<<< HEAD
       virtual string fileType(){return "directory";}
+=======
+>>>>>>> parent of 7fd8e90... wip preExitClear, added exit status
 =======
 >>>>>>> parent of 7fd8e90... wip preExitClear, added exit status
 };
