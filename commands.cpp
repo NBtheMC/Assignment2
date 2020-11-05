@@ -136,8 +136,6 @@ void fn_exit (inode_state& state, const wordvec& words){
 }
 
 void fn_ls (inode_state& state, const wordvec& words){
-   DEBUGF ('c', state);
-   DEBUGF ('c', words);
    inode_ptr currentDir;
    if(words.size() > 1){
       currentDir = findNode(state, words[1]);
@@ -145,6 +143,13 @@ void fn_ls (inode_state& state, const wordvec& words){
    else{
       currentDir = state.getCwd();
    }
+   if(state.getCwd() == state.getRoot()){
+      cout << "/:" << endl;
+   }
+   else{
+      cout << "/" << state.getCwdPath() << "/" << ":" << endl;
+   }
+   
    for( auto mapObj : currentDir->getContents()->getdirents()){
       auto inodePtr = mapObj.second;
       cout << setw(6)<< inodePtr->get_inode_nr() 
@@ -168,7 +173,7 @@ void fn_lsr (inode_state& state, const wordvec& words){
       //directory type
       shared_ptr<directory> isDir = 
          dynamic_pointer_cast<directory>(inodePtr->getContents());
-      if(isDir){
+      if(isDir && (map.first != ".") && (map.first != "..")){
          //recursively go into every directory
          string pathName = words[1]+"/"+map.first;
          wordvec w;
@@ -176,8 +181,6 @@ void fn_lsr (inode_state& state, const wordvec& words){
          fn_lsr(state,w);
       }
    }
-   DEBUGF ('c', state);
-   DEBUGF ('c', words);
 }
 
 void fn_make (inode_state& state, const wordvec& words){
@@ -218,6 +221,10 @@ void fn_mkdir (inode_state& state, const wordvec& words){
    }else{
       targetNode = state.getCwd();
    }
+   //dont make directory named . or ..
+   //if(dirname == "." || dirname == ".."){
+      return;
+   //}
    //only make if target does not have same name directory
    auto nodeToEnter = targetNode->getContents()->getdirents().find(dirname);
    if(nodeToEnter != targetNode->getContents()->getdirents().end()){
