@@ -147,11 +147,7 @@ void fn_ls (inode_state& state, const wordvec& words){
       cout << "/:" << endl;
    }
    else{
-      if(words.size() > 1){
-         cout << "/" << state.getCwdPath() << words[1]  <<  "/" << ":" << endl;
-      }else{
-         cout << "/" << state.getCwdPath() <<  ":" << endl;
-      }
+      cout  << currentDir->getPath() <<":"<<endl;
    }
    
    for( auto mapObj : currentDir->getContents()->getdirents()){
@@ -175,7 +171,7 @@ void fn_lsr (inode_state& state, const wordvec& words){
    if(currentDir == state.getRoot()){
       cout << "/:" << endl;
    } else{
-      cout << "/" << currentDir->getPath() <<":"<<endl;
+      cout  << currentDir->getPath() <<":"<<endl;
    }
    auto wordCopy = words;
 
@@ -257,6 +253,7 @@ void fn_make (inode_state& state, const wordvec& words){
    }
    auto file = targetNode->getContents()->mkfile(filename);
    file->getContents()->writefile(fileContents);
+   file->setPath(targetNode->getPath()+"/"+filename);
 }
 
 void fn_mkdir (inode_state& state, const wordvec& words){
@@ -283,6 +280,9 @@ void fn_mkdir (inode_state& state, const wordvec& words){
       auto dir = targetNode->getContents()->mkdir(dirname);
       auto insertPair = pair<string,inode_ptr>("..", state.getCwd());
       dir->getContents()->getdirents().insert(insertPair);
+      
+      dir->setPath(targetNode->getPath()+"/"+dirname);
+
    }
    DEBUGF ('c', state);
    DEBUGF ('c', words);
