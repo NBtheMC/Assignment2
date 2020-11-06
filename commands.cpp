@@ -85,7 +85,6 @@ void fn_cat (inode_state& state, const wordvec& words){
       }
       cout << endl;
    }
-   cout << endl;
 }
 
 void fn_cd (inode_state& state, const wordvec& words){
@@ -212,26 +211,6 @@ void fn_lsr (inode_state& state, const wordvec& words){
 
 
 
-/*   //print out current path
-   inode_ptr dir = findNode(state, words[1]);
-   fn_ls(state,words);
-   //print out everything in the path's directory
-   for(auto map: dir->getContents()->getdirents()){     
-      auto inodePtr = map.second;
-      //print out whether file or directory
-      cout << setw(6)<< inodePtr->get_inode_nr() << setw(6)<< 
-         inodePtr->getContents()->size() << "  " << map.first << endl;
-      //directory type
-      shared_ptr<directory> isDir = 
-         dynamic_pointer_cast<directory>(inodePtr->getContents());
-      if(isDir && (map.first != ".") && (map.first != "..")){
-         //recursively go into every directory
-         string pathName = words[1]+"/"+map.first;
-         wordvec w;
-         w.push_back(pathName);
-         fn_lsr(state,w);
-      }
-   }*/
 }
 
 void fn_make (inode_state& state, const wordvec& words){
@@ -336,9 +315,6 @@ void fn_rm (inode_state& state, const wordvec& words){
 }
 
 void fn_rmr (inode_state& state, const wordvec& words){
-   if (words[1].empty()==true || words[1] == "." || words[1] == ".."){
-      return;
-   }
    inode_ptr dir = findNode(state, words[1]);
 
    wordvec parsedPath = split(words[1],"/");
@@ -372,24 +348,6 @@ void fn_rmr (inode_state& state, const wordvec& words){
       dir->getContents() = nullptr;
    }
 
-   /*//delete everything
-   for(auto map: dir->getContents()->getdirents()){
-      auto inodePtr = map.second;
-      string pathName = words[1]+"/"+map.first;
-      wordvec w;
-      w.push_back(pathName);
-      //directory type
-      shared_ptr<directory> isDir = 
-         dynamic_pointer_cast<directory>(inodePtr->getContents());
-      if(isDir){
-         //recursively go into every directory
-         fn_rmr(state,w);
-      }
-      //plain file
-      else{
-         fn_rm(state,w);
-      }
-   }*/
 }
 
 void fn_nothing (inode_state& state, const wordvec& words){
