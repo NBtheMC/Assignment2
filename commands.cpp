@@ -24,7 +24,7 @@ command_hash cmd_hash {
 };
 
 inode_ptr findNode( inode_state& state, string path);
-void preExitClear(inode_ptr node);
+void preExitClear(inode_ptr& node);
 int stringToInt(string str);
 
 
@@ -320,21 +320,24 @@ inode_ptr findNode( inode_state& state, string path){
    
 }
 
-void preExitClear(inode_ptr node){
+void preExitClear(inode_ptr& node){
    if(node->getContents()->fileType() == "file"){
+      node->getContents() = nullptr;
       return;
    }
    auto dirents = node->getContents()->getdirents();
-   if(dirents.size() == 2){
-      cout << "delete empty node" << endl;
+
+   if(dirents.size() <= 2){
+      node->getContents()->getdirents().clear();
+      //delete empty directory
+      node->getContents() = nullptr;
    }else{
       for(auto entryPair : dirents){
-         cout<< "try to delete: " << entryPair.first << endl;
          if(entryPair.first != "." && entryPair.first != ".."){
             preExitClear(entryPair.second);
+            node->getContents()->getdirents().erase(entryPair.first);
          }
       }
-      cout << "delete empty node" << endl;
 
    }
 }
