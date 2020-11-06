@@ -30,10 +30,11 @@ inode_state::inode_state() {
    //initializing root of tree
    root = make_shared<inode>(file_type::DIRECTORY_TYPE);
    cwd = root;
-   map<string,inode_ptr> rootDirents = root->contents->getdirents();
    //two new pointers in map (".",root) and ("..",root)
-   rootDirents.insert(pair<string,inode_ptr>(".",root));
-   rootDirents.insert(pair<string,inode_ptr>("..",root));
+   root->contents->getdirents()
+      .insert(pair<string,inode_ptr>(".",root));
+   root->contents->getdirents()
+      .insert(pair<string,inode_ptr>("..",root));
    DEBUGF ('i', "root = " << root << ", cwd = " << cwd
           << ", prompt = \"" << prompt() << "\"");
 }
@@ -137,7 +138,7 @@ void directory::remove (const string& filename) {
 inode_ptr directory::mkdir (const string& dirname) {
    DEBUGF ('i', dirname);
    inode_ptr dir = make_shared<inode>(file_type::DIRECTORY_TYPE);
-   //insert dot and dotdot into new directory
+   //insert dot into new directory
    (dir->getContents())->getdirents()
       .insert(pair<string,inode_ptr>(".",dir));
    dirents.insert(pair<string,inode_ptr>(dirname, dir));  
