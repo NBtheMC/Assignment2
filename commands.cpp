@@ -143,11 +143,15 @@ void fn_ls (inode_state& state, const wordvec& words){
    else{
       currentDir = state.getCwd();
    }
-   if(state.getCwd() == state.getRoot()){
+   if(currentDir  == state.getRoot()){
       cout << "/:" << endl;
    }
    else{
-      cout << "/" << state.getCwdPath() << "/" << ":" << endl;
+      if(words.size() > 1){
+         cout << "/" << state.getCwdPath() << words[1]  <<  "/" << ":" << endl;
+      }else{
+         cout << "/" << state.getCwdPath() <<  ":" << endl;
+      }
    }
    
    for( auto mapObj : currentDir->getContents()->getdirents()){
@@ -161,7 +165,55 @@ void fn_ls (inode_state& state, const wordvec& words){
 }
 
 void fn_lsr (inode_state& state, const wordvec& words){
-   //print out current path
+   inode_ptr currentDir;
+   if(words.size() > 1){
+      currentDir = findNode(state, words[1]);
+   }
+   else{
+      currentDir = state.getCwd();
+   }
+   if(currentDir == state.getRoot()){
+      cout << "/:" << endl;
+   } else{
+      cout << "/" << currentDir->getPath() <<":"<<endl;
+   }
+   auto wordCopy = words;
+
+   for( auto mapObj : currentDir->getContents()->getdirents()){
+      if(mapObj.second->getContents()->fileType() == "file"){
+         auto inodePtr = mapObj.second;
+         cout << setw(6)<< inodePtr->get_inode_nr()
+            << setw(6)
+            << inodePtr->getContents()->size()
+            << "  " << mapObj.first
+            << endl;
+       }else{
+          wordCopy = words;
+
+          if(mapObj.first == "." || mapObj.first == ".."){
+             
+            auto inodePtr = mapObj.second;
+            cout << setw(6)<< inodePtr->get_inode_nr()
+               << setw(6)
+               << inodePtr->getContents()->size()
+               << "  " << mapObj.first
+               << endl;
+
+          }else{
+              if(words.size() > 1){
+                wordCopy[1] +="/";
+                wordCopy[1] += mapObj.first;
+             }else{
+                wordCopy.push_back(mapObj.first);
+             }
+             fn_lsr(state,wordCopy);
+          }
+       }
+   }
+
+
+
+/*   //print out current path
    inode_ptr dir = findNode(state, words[1]);
    fn_ls(state,words);
    //print out everything in the path's directory
@@ -180,7 +232,7 @@ void fn_lsr (inode_state& state, const wordvec& words){
          w.push_back(pathName);
          fn_lsr(state,w);
       }
-   }
+   }*/
 }
 
 void fn_make (inode_state& state, const wordvec& words){
@@ -348,6 +400,9 @@ void preExitClear(inode_ptr& node){
          }
       }
 
+      node->getContents()->getdirents().clear();
+      //delete empty directory
+      node->getContents() = nullptr;
    }
 }
 

@@ -74,6 +74,8 @@ class inode {
       inode (file_type);
       int get_inode_nr() const;
       base_file_ptr& getContents(){return contents;}
+      string getPath(){return pathname;}
+      void setPath(string path){pathname = path;}
       
 };
 
