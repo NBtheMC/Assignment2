@@ -334,7 +334,39 @@ void fn_rm (inode_state& state, const wordvec& words){
 
 void fn_rmr (inode_state& state, const wordvec& words){
    inode_ptr dir = findNode(state, words[1]);
-   //delete everything
+
+   wordvec parsedPath = split(words[1],"/");
+   string dirname = parsedPath.back();
+   inode_ptr parentDir;
+   string parentPath = "";
+   if(parsedPath.size() > 1){
+      parsedPath.pop_back();
+      for(auto word : parsedPath){
+         parentPath += word;
+      }
+      parentDir = findNode(state, parentPath);
+   }else{
+      parentDir = state.getCwd();
+   }
+   parentDir->getContents()->remove(dirname);
+   auto dirents = dir->getContents()->getdirents();
+
+   if(dirents.size() <= 2){
+      dir->getContents()->getdirents().clear();
+      dir->getContents() = nullptr;
+   }else{
+      for(auto entryPair : dirents){
+         if(entryPair.first != "." && entryPair.first != ".."){
+            preExitClear(entryPair.second);
+            dir->getContents()->getdirents().erase(entryPair.first);
+         }
+      }
+
+      dir->getContents()->getdirents().clear();
+      dir->getContents() = nullptr;
+   }
+
+   /*//delete everything
    for(auto map: dir->getContents()->getdirents()){
       auto inodePtr = map.second;
       string pathName = words[1]+"/"+map.first;
@@ -351,7 +383,7 @@ void fn_rmr (inode_state& state, const wordvec& words){
       else{
          fn_rm(state,w);
       }
-   }
+   }*/
 }
 
 void fn_nothing (inode_state& state, const wordvec& words){
@@ -405,6 +437,9 @@ void preExitClear(inode_ptr& node){
       node->getContents() = nullptr;
    }
 }
+
+
+
 
 int stringToInt(string str){
    int result = 0;
