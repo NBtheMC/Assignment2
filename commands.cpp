@@ -333,24 +333,42 @@ void fn_rm (inode_state& state, const wordvec& words){
 }
 
 void fn_rmr (inode_state& state, const wordvec& words){
-   inode_ptr dir = findNode(state, words[1]);
+   inode_ptr currentDir;
+   if(words.size() > 1){
+      currentDir = findNode(state, words[1]);
+   }
+   else{
+      currentDir = state.getCwd();
+
+   auto wordCopy = words;
    //delete everything
-   for(auto map: dir->getContents()->getdirents()){
-      auto inodePtr = map.second;
-      string pathName = words[1]+"/"+map.first;
-      wordvec w;
-      w.push_back(pathName);
-      //directory type
-      shared_ptr<directory> isDir = 
-         dynamic_pointer_cast<directory>(inodePtr->getContents());
-      if(isDir){
-         //recursively go into every directory
-         fn_rmr(state,w);
-      }
-      //plain file
-      else{
-         fn_rm(state,w);
-      }
+   for( auto mapObj : currentDir->getContents()->getdirents()){
+      if(mapObj.second->getContents()->fileType() == "file"){
+         //remove file
+         currentDir->getContents()->remove(mapObj.first);
+       }
+       else{
+          //remove directory
+          wordCopy = words;
+
+          if((mapObj.first == "." || mapObj.first == "..") && state.getCwd()!=state.getRoot()){
+             currentDir->getContents()->remove(mapObj.first);
+          }
+          else{
+              if(words.size() > 1){
+                wordCopy[1] +="/";
+                wordCopy[1] += mapObj.first;
+             }
+             else{
+                wordCopy.push_back(mapObj.first);
+             }
+             //recursively remove directories
+             fn_rmr(state,wordCopy);
+             //remove this directory
+             currentDir->getContents()->remove(mapObj.first);
+          }
+       }
+   }
    }
 }
 
