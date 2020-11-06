@@ -147,7 +147,7 @@ void fn_ls (inode_state& state, const wordvec& words){
       cout << "/:" << endl;
    }
    else{
-      cout << "/" << state.getCwdPath() << "/" << ":" << endl;
+      cout << "/" << state.getCwdPath() << ":" << endl;
    }
    
    for( auto mapObj : currentDir->getContents()->getdirents()){
@@ -162,8 +162,15 @@ void fn_ls (inode_state& state, const wordvec& words){
 
 void fn_lsr (inode_state& state, const wordvec& words){
    //print out current path
-   inode_ptr dir = findNode(state, words[1]);
-   fn_ls(state,words);
+   inode_ptr dir;
+   if(words.size() > 1){
+      dir = findNode(state, words[1]);
+   }
+   else{
+      dir = state.getCwd();
+   }
+   fn_ls(state, words);
+   cout << "/" << words[1] << ":" << endl;
    //print out everything in the path's directory
    for(auto map: dir->getContents()->getdirents()){     
       auto inodePtr = map.second;
@@ -276,12 +283,27 @@ void fn_rm (inode_state& state, const wordvec& words){
    }else{
       targetNode = state.getCwd();
    }
-
+   //dont remove . or ..
+   if(filename == "." || filename == ".."){
+      return;
+   }
+   //dont remove directories if they're not empty
+   shared_ptr<directory> isDir = 
+      dynamic_pointer_cast<directory>(targetNode->getContents());
+   if(isDir && targetNode->getContents()->size()>2){
+      return;
+   }
    targetNode->getContents()->remove(filename);
 }
 
 void fn_rmr (inode_state& state, const wordvec& words){
-   inode_ptr dir = findNode(state, words[1]);
+   inode_ptr dir;
+   if(words.size() > 1){
+      dir = findNode(state, words[1]);
+   }
+   else{
+      dir = state.getCwd();
+   }
    //delete everything
    for(auto map: dir->getContents()->getdirents()){
       auto inodePtr = map.second;
