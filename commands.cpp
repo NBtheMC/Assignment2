@@ -336,6 +336,9 @@ void fn_rm (inode_state& state, const wordvec& words){
 }
 
 void fn_rmr (inode_state& state, const wordvec& words){
+   if (words[1].empty()==true || words[1] == "." || words[1] == ".."){
+      return;
+   }
    inode_ptr dir = findNode(state, words[1]);
 
    wordvec parsedPath = split(words[1],"/");
