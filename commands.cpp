@@ -155,8 +155,11 @@ void fn_ls (inode_state& state, const wordvec& words){
       cout << setw(6)<< inodePtr->get_inode_nr() 
          << setw(6)
          << inodePtr->getContents()->size() 
-         << "  " << mapObj.first 
-         << endl;
+         << "  " << mapObj.first;
+      if(currentDir->getContents()->fileType() == "directory")  {
+         cout << "/" ;
+      } 
+      cout << endl;
    }
 }
 
@@ -192,7 +195,7 @@ void fn_lsr (inode_state& state, const wordvec& words){
             cout << setw(6)<< inodePtr->get_inode_nr()
                << setw(6)
                << inodePtr->getContents()->size()
-               << "  " << mapObj.first
+               << "  " << mapObj.first << "/"
                << endl;
 
           }else{
